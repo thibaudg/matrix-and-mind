@@ -1,0 +1,18 @@
+{
+  "name": "Matrix & Mind",
+  "short_name": "Matrix & Mind",
+  "description": "Eisenhower priority matrices and a CBT positive-thinking thought record.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EEF0F3",
+  "theme_color": "#EEF0F3",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

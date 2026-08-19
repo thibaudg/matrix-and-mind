@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#EEF0F3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Matrix &amp; Mind</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== LOGIN ===== -->
+  <div class="view active" id="view-login">
+    <div class="login">
+      <div class="logo">◫</div>
+      <h1 class="login-title">Matrix &amp; Mind</h1>
+      <p class="login-sub">Your priorities and your thoughts, in one place.</p>
+      <form id="login-form" autocomplete="on">
+        <input id="login-email" class="field-input" type="email" placeholder="Email" autocomplete="email" required>
+        <input id="login-password" class="field-input" type="password" placeholder="Password" autocomplete="current-password" required minlength="6">
+        <div class="login-error" id="login-error"></div>
+        <button class="primary" id="login-submit" type="submit">Sign in</button>
+      </form>
+      <div class="switch" id="login-switch">
+        New here? <b id="login-toggle">Create an account</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HOME (both tabs) ===== -->
+  <div class="view" id="view-home">
+    <div class="seg">
+      <button class="seg-btn on" id="tab-matrices">Matrices</button>
+      <button class="seg-btn" id="tab-thinking">Positive thinking</button>
+    </div>
+
+    <div id="pane-matrices">
+      <div class="eyebrow">Eisenhower method</div>
+      <h1 class="title">Priority Matrices</h1>
+      <div id="matrices-content"><div class="loading">loading…</div></div>
+    </div>
+
+    <div id="pane-thinking" style="display:none;">
+      <div class="eyebrow">Thought record</div>
+      <h1 class="title">Positive Thinking</h1>
+      <div id="thinking-content"><div class="loading">loading…</div></div>
+    </div>
+
+    <button class="signout" id="signout-btn">Sign out</button>
+  </div>
+
+  <!-- ===== CREATE MATRIX ===== -->
+  <div class="view" id="view-create">
+    <button class="back-btn" id="create-back">‹ Matrices</button>
+    <div class="field-label">Name this matrix</div>
+    <input id="new-name-input" class="name-field" type="text" placeholder="e.g. This Week" maxlength="60">
+    <div class="preset-row" id="preset-row"></div>
+    <button class="primary block" id="create-submit" disabled>Create</button>
+  </div>
+
+  <!-- ===== MATRIX DETAIL ===== -->
+  <div class="view" id="view-matrix">
+    <button class="back-btn" id="matrix-back">‹ Matrices</button>
+    <div class="detail-head">
+      <h1 class="title editable" id="matrix-title-display"></h1>
+      <input id="matrix-title-input" class="title-input" type="text" maxlength="60" style="display:none;">
+    </div>
+
+    <div class="axis-top">
+      <div class="axcap">Urgent</div>
+      <div class="axcap">Not urgent</div>
+    </div>
+    <div class="grid">
+      <div class="quad q-do" id="q-do">
+        <div class="quad-head"><p class="quad-title">Do</p><p class="quad-sub">Handle it now</p></div>
+        <ul class="tasks" id="tasks-do"></ul>
+      </div>
+      <div class="quad q-schedule" id="q-schedule">
+        <div class="quad-head"><p class="quad-title">Schedule</p><p class="quad-sub">Plan time for it</p></div>
+        <ul class="tasks" id="tasks-schedule"></ul>
+      </div>
+      <div class="quad q-delegate" id="q-delegate">
+        <div class="quad-head"><p class="quad-title">Delegate</p><p class="quad-sub">Hand it off</p></div>
+        <ul class="tasks" id="tasks-delegate"></ul>
+      </div>
+      <div class="quad q-drop" id="q-drop">
+        <div class="quad-head"><p class="quad-title">Drop</p><p class="quad-sub">Skip it</p></div>
+        <ul class="tasks" id="tasks-drop"></ul>
+      </div>
+    </div>
+
+    <footer>tap ＋ in a quadrant to add · tap a task to check it off</footer>
+  </div>
+
+  <!-- ===== POSITIVE THINKING SESSION ===== -->
+  <div class="view" id="view-session">
+    <button class="back-btn" id="session-back">‹ Sessions</button>
+    <div class="detail-head">
+      <h1 class="title" id="session-title-display"></h1>
+    </div>
+
+    <div class="pt-heads">
+      <div class="pt-head l">The thought</div>
+      <div class="pt-head r">The balance</div>
+    </div>
+
+    <ul class="pairs" id="pairs"></ul>
+    <button class="add-pair-btn" id="add-pair">+ Add a thought</button>
+
+    <div class="keep">
+      <h2>What I'm taking with me</h2>
+      <p class="hint">Star up to 4 balancing thoughts to keep.</p>
+      <div id="takeaways-body"></div>
+    </div>
+
+    <footer>tap any box to write · ★ marks a thought worth keeping</footer>
+  </div>
+
+</div>
+
+<script src="vendor/supabase.js"></script>
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
