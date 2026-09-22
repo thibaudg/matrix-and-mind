@@ -64,60 +64,70 @@
 
   <!-- ===== MATRIX DETAIL ===== -->
   <div class="view" id="view-matrix">
-    <button class="back-btn" id="matrix-back">‹ Matrices</button>
+    <div class="detail-top">
+      <button class="back-btn" id="matrix-back">‹ Matrices</button>
+      <div class="view-toggle" id="matrix-view-toggle">
+        <button type="button" data-view="grid" class="on" aria-label="Grid view">▦</button>
+        <button type="button" data-view="list" aria-label="List view">≡</button>
+      </div>
+    </div>
     <div class="detail-head">
       <h1 class="title editable" id="matrix-title-display"></h1>
       <input id="matrix-title-input" class="title-input" type="text" maxlength="60" style="display:none;">
     </div>
 
-    <div class="axis-top">
-      <div class="axcap">Urgent</div>
-      <div class="axcap">Not urgent</div>
-    </div>
-    <div class="grid">
-      <div class="quad q-do" id="q-do">
-        <div class="quad-head"><p class="quad-title">Do</p><p class="quad-sub">Handle it now</p></div>
-        <ul class="tasks" id="tasks-do"></ul>
+    <div id="matrix-grid-view">
+      <div class="axis-top">
+        <div class="axcap">Urgent</div>
+        <div class="axcap">Not urgent</div>
       </div>
-      <div class="quad q-schedule" id="q-schedule">
-        <div class="quad-head"><p class="quad-title">Schedule</p><p class="quad-sub">Plan time for it</p></div>
-        <ul class="tasks" id="tasks-schedule"></ul>
-      </div>
-      <div class="quad q-delegate" id="q-delegate">
-        <div class="quad-head"><p class="quad-title">Delegate</p><p class="quad-sub">Hand it off</p></div>
-        <ul class="tasks" id="tasks-delegate"></ul>
-      </div>
-      <div class="quad q-drop" id="q-drop">
-        <div class="quad-head"><p class="quad-title">Drop</p><p class="quad-sub">Skip it</p></div>
-        <ul class="tasks" id="tasks-drop"></ul>
+      <div class="grid">
+        <div class="quad q-do" id="q-do">
+          <div class="quad-head"><p class="quad-title">Do with intention</p><p class="quad-sub">Handle it now</p></div>
+          <ul class="tasks" id="tasks-do"></ul>
+        </div>
+        <div class="quad q-schedule" id="q-schedule">
+          <div class="quad-head"><p class="quad-title">Schedule</p><p class="quad-sub">Plan time for it</p></div>
+          <ul class="tasks" id="tasks-schedule"></ul>
+        </div>
+        <div class="quad q-delegate" id="q-delegate">
+          <div class="quad-head"><p class="quad-title">Do – low effort</p><p class="quad-sub">Quick wins</p></div>
+          <ul class="tasks" id="tasks-delegate"></ul>
+        </div>
+        <div class="quad q-drop" id="q-drop">
+          <div class="quad-head"><p class="quad-title">Drop</p><p class="quad-sub">Skip it</p></div>
+          <ul class="tasks" id="tasks-drop"></ul>
+        </div>
       </div>
     </div>
 
-    <footer>tap ＋ in a quadrant to add · tap a task to check it off</footer>
+    <div id="matrix-list-view" style="display:none;"></div>
+
+    <footer>tap ＋ to add · tap a task to check it off · ▦ / ≡ switches view</footer>
   </div>
 
   <!-- ===== POSITIVE THINKING SESSION ===== -->
   <div class="view" id="view-session">
-    <button class="back-btn" id="session-back">‹ Sessions</button>
+    <div class="detail-top">
+      <button class="back-btn" id="session-back">‹ Sessions</button>
+      <div class="view-toggle" id="session-view-toggle">
+        <button type="button" data-view="cols" class="on" aria-label="Columns view">▥</button>
+        <button type="button" data-view="stack" aria-label="Stacked view">≡</button>
+      </div>
+    </div>
     <div class="detail-head">
       <h1 class="title" id="session-title-display"></h1>
     </div>
 
-    <div class="pt-heads">
-      <div class="pt-head l">The thought</div>
-      <div class="pt-head r">The balance</div>
-    </div>
-
-    <ul class="pairs" id="pairs"></ul>
-    <button class="add-pair-btn" id="add-pair">+ Add a thought</button>
+    <div id="session-body"></div>
 
     <div class="keep">
       <h2>What I'm taking with me</h2>
-      <p class="hint">Star up to 4 balancing thoughts to keep.</p>
-      <div id="takeaways-body"></div>
+      <p class="hint">Write your own summary — tap to type.</p>
+      <div class="summary-field" id="summary-field"></div>
     </div>
 
-    <footer>tap any box to write · ★ marks a thought worth keeping</footer>
+    <footer>two separate lists · tap any box to write · ▥ / ≡ switches view</footer>
   </div>
 
 </div>

@@ -238,3 +238,103 @@ footer{
   display:block;margin:34px auto 0;background:none;border:none;
   color:var(--indigo);font-family:inherit;font-size:13.5px;font-weight:600;padding:8px;
 }
+
+/* ==========================================================================
+   v2 additions — view toggle, matrix list view, independent-list thinking
+   ========================================================================== */
+
+/* detail top row: back button + view toggle */
+.detail-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.detail-top .back-btn{padding-bottom:6px;}
+.view-toggle{display:flex;background:#E2E5EA;border-radius:11px;padding:3px;flex:0 0 auto;}
+.view-toggle button{
+  width:38px;height:30px;border:none;background:none;border-radius:8px;
+  font-size:16px;color:var(--soft);font-family:inherit;line-height:1;
+}
+.view-toggle button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12);}
+
+/* ---------- matrix list view ---------- */
+#matrix-list-view{display:flex;flex-direction:column;gap:10px;}
+.mlist{border-radius:16px;padding:12px 13px 12px 15px;position:relative;overflow:hidden;}
+.mlist::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;}
+.mlist.m-do{background:var(--do-bg);} .mlist.m-do::before{background:var(--do);}
+.mlist.m-schedule{background:var(--sched-bg);} .mlist.m-schedule::before{background:var(--sched);}
+.mlist.m-delegate{background:var(--deleg-bg);} .mlist.m-delegate::before{background:var(--deleg);}
+.mlist.m-drop{background:var(--drop-bg);} .mlist.m-drop::before{background:var(--drop);}
+.mlist-head{display:flex;align-items:baseline;gap:9px;margin-bottom:9px;}
+.mlist-title{font-size:15px;font-weight:700;}
+.mlist.m-do .mlist-title{color:var(--do);} .mlist.m-schedule .mlist-title{color:var(--sched);}
+.mlist.m-delegate .mlist-title{color:var(--deleg);} .mlist.m-drop .mlist-title{color:var(--drop);}
+.mlist-sub{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--soft);font-weight:700;}
+.mlist-rows{display:flex;flex-direction:column;gap:6px;}
+.mlist-row{
+  display:flex;align-items:flex-start;gap:8px;background:rgba(255,255,255,.72);
+  border-radius:9px;padding:8px 9px;font-size:13px;line-height:1.35;
+}
+.mlist-row .chk{
+  width:15px;height:15px;border:1.5px solid #B7BCC5;border-radius:6px;background:#fff;
+  flex:0 0 auto;margin-top:1px;display:flex;align-items:center;justify-content:center;
+}
+.mlist-row.done .chk{background:var(--ink);border-color:var(--ink);}
+.mlist-row.done .chk::after{content:"✓";color:#fff;font-size:9px;line-height:1;}
+.mlist-row .txt{flex:1;word-break:break-word;}
+.mlist-row.done .txt{text-decoration:line-through;color:var(--faint);}
+.mlist-row .del{flex:0 0 auto;font-size:14px;color:var(--faint);background:none;border:none;padding:0 2px;line-height:1;}
+.mlist-empty{font-size:12px;color:var(--faint);font-style:italic;padding:2px 2px 6px;}
+
+/* shared inline add affordance (matrix list + thinking) */
+.inline-add{
+  border:1.5px dashed #C4C9D2;background:rgba(255,255,255,.4);border-radius:9px;
+  padding:8px;font-size:12.5px;font-weight:600;color:var(--soft);font-family:inherit;
+  width:100%;margin-top:6px;
+}
+.inline-add-form{display:none;gap:5px;margin-top:6px;}
+.inline-add-form.open{display:flex;}
+.inline-add-form input{
+  flex:1;border:none;border-radius:9px;padding:8px 9px;font-size:13px;font-family:inherit;
+  background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.inline-add-form input:focus{outline:1.5px solid var(--indigo);}
+.inline-add-form button{
+  border:none;background:var(--ink);color:#fff;border-radius:9px;padding:0 13px;
+  font-size:13px;font-weight:600;font-family:inherit;
+}
+
+/* ---------- positive thinking: two independent lists ---------- */
+.pt-cols{display:grid;grid-template-columns:1fr 1fr;gap:9px;align-items:start;}
+.pt-col{display:flex;flex-direction:column;gap:7px;}
+.pt-section-h{font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;margin:2px 2px 8px;}
+.pt-section-h.l{color:var(--shadow);}
+.pt-section-h.r{color:var(--light);}
+.pt-divide{height:1px;background:#D8DCE2;margin:16px 0 14px;}
+.pt-stack-list{display:flex;flex-direction:column;gap:7px;}
+
+.pt-item{
+  border-radius:11px;padding:9px 26px 9px 10px;font-size:12.5px;line-height:1.4;
+  position:relative;word-break:break-word;white-space:pre-wrap;min-height:40px;
+}
+.pt-item.l{background:var(--shadow-bg);color:var(--shadow);}
+.pt-item.r{background:var(--light-bg);color:var(--light);}
+.pt-item.placeholder{color:var(--faint);font-style:italic;}
+.pt-item textarea{
+  width:100%;border:none;background:transparent;font-family:inherit;font-size:12.5px;
+  line-height:1.4;color:inherit;resize:none;padding:0;min-height:40px;
+}
+.pt-item textarea:focus{outline:none;}
+.pt-item .pt-del{
+  position:absolute;top:5px;right:6px;background:none;border:none;font-size:12px;
+  color:var(--faint);padding:2px;line-height:1;
+}
+
+/* ---------- summary field ---------- */
+.keep .summary-field{
+  background:#fff;border:1px solid #CFE3D5;border-radius:11px;padding:11px 12px;
+  font-size:13.5px;line-height:1.45;color:var(--light);min-height:52px;
+  white-space:pre-wrap;word-break:break-word;
+}
+.keep .summary-field.placeholder{color:var(--soft);font-style:italic;}
+.keep .summary-field textarea{
+  width:100%;border:none;background:transparent;font-family:inherit;font-size:13.5px;
+  line-height:1.45;color:var(--light);resize:none;padding:0;min-height:46px;
+}
+.keep .summary-field textarea:focus{outline:none;}
