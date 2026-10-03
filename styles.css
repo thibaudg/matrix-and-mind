@@ -338,3 +338,64 @@ footer{
   line-height:1.45;color:var(--light);resize:none;padding:0;min-height:46px;
 }
 .keep .summary-field textarea:focus{outline:none;}
+
+/* ==========================================================================
+   v3 — matrix-style thinking panels (amber / green) + responsive desktop
+   ========================================================================== */
+:root{
+  --neg-bg:#F6E8DB; --neg:#9A5A2E; --neg-accent:#B5733A; --neg-badge:#EBCDAF; --neg-badge-ink:#7E4A28;
+  --pos-bg:#E4F0E6; --pos:#3F7A54; --pos-accent:#3F7A54; --pos-badge:#CDE7D4; --pos-badge-ink:#2E7146;
+  --chip:rgba(255,255,255,.80); --chip-ink:#24303a;
+}
+
+#session-body.mode-cols .pt-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
+.pt-panel{border-radius:16px;padding:12px 12px 13px;position:relative;overflow:hidden;}
+#session-body.mode-stack .pt-panel{margin-bottom:12px;}
+.pt-panel.l{background:var(--neg-bg);}
+.pt-panel.r{background:var(--pos-bg);}
+.pt-panel.accent{padding-left:15px;}
+.pt-panel.accent::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;}
+.pt-panel.l.accent::before{background:var(--neg-accent);}
+.pt-panel.r.accent::before{background:var(--pos-accent);}
+.pt-panel-h{font-weight:700;font-size:13.5px;margin:0 0 9px;}
+.pt-panel.l .pt-panel-h{color:var(--neg);}
+.pt-panel.r .pt-panel-h{color:var(--pos);}
+
+.pt-chip{
+  background:var(--chip);border-radius:9px;padding:8px 24px 8px 9px;font-size:12.5px;
+  color:var(--chip-ink);margin-bottom:6px;display:flex;gap:8px;align-items:flex-start;
+  line-height:1.4;position:relative;word-break:break-word;
+}
+.pt-badge{
+  flex:0 0 auto;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:13px;font-weight:700;line-height:1;margin-top:1px;
+}
+.pt-chip.l .pt-badge{background:var(--neg-badge);color:var(--neg-badge-ink);}
+.pt-chip.r .pt-badge{background:var(--pos-badge);color:var(--pos-badge-ink);}
+.pt-chip-text{flex:1;white-space:pre-wrap;}
+.pt-chip.placeholder .pt-chip-text{color:var(--faint);font-style:italic;}
+.pt-chip textarea{
+  flex:1;border:none;background:transparent;font-family:inherit;font-size:12.5px;line-height:1.4;
+  color:var(--chip-ink);resize:none;padding:0;min-height:38px;
+}
+.pt-chip textarea:focus{outline:none;}
+.pt-del{position:absolute;top:6px;right:7px;background:none;border:none;font-size:12px;color:var(--faint);padding:2px;line-height:1;}
+.pt-panel .inline-add{background:rgba(255,255,255,.42);margin-top:6px;}
+
+/* ---------- responsive desktop width ---------- */
+@media(min-width:640px){ .wrap{max-width:720px;} }
+@media(min-width:1040px){ .wrap{max-width:960px;} }
+
+/* home record lists flow into two columns on wider screens */
+@media(min-width:680px){
+  .rec-list{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+  .rec-list .rec-row{margin-bottom:0;}
+}
+
+/* keep text-heavy single-column screens at a comfortable reading width */
+@media(min-width:640px){
+  #matrix-list-view{max-width:640px;margin-left:auto;margin-right:auto;}
+  #session-body.mode-stack{max-width:640px;margin-left:auto;margin-right:auto;}
+  #view-session .keep{max-width:640px;margin-left:auto;margin-right:auto;}
+  #view-create{max-width:560px;margin-left:auto;margin-right:auto;}
+}

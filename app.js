@@ -22,6 +22,7 @@ let currentMatrixId = null, currentTasks = [];
 let currentSessionId = null, currentData = null;
 
 let loginMode = 'signin';
+let currentTab = 'matrices';
 
 /* ---------- helpers ---------- */
 function uid(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
@@ -40,6 +41,19 @@ function lsGet(k, d){ try{ const v = localStorage.getItem(k); return v == null ?
 function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
 function getMatrixView(){ return lsGet('mm-matrix-view', 'grid'); }
 function getSessionView(){ return lsGet('mm-session-view', 'cols'); }
+
+/* remember the last screen so reopening the app lands where you left off */
+function saveNav(state){ try{ localStorage.setItem('mm-nav', JSON.stringify(state)); }catch(e){} }
+function readNav(){ try{ return JSON.parse(localStorage.getItem('mm-nav') || 'null'); }catch(e){ return null; } }
+function restoreNav(){
+  const nav = readNav();
+  if(nav){
+    if(nav.screen === 'matrix' && matrices.some(m => m.id === nav.id)){ setTab('matrices'); openMatrix(nav.id); return; }
+    if(nav.screen === 'session' && sessions.some(s => s.id === nav.id)){ setTab('thinking'); openSession(nav.id); return; }
+    if(nav.screen === 'home'){ setTab(nav.tab === 'thinking' ? 'thinking' : 'matrices'); showView('home'); return; }
+  }
+  setTab('matrices'); showView('home');
+}
 
 /* normalize a session's stored JSON into {thoughts, balances, summary},
    migrating the old pair format ([{neg,pos,star}]) if present */
@@ -162,8 +176,7 @@ async function onSignedIn(session){
   await loadAll();
   renderMatrixList();
   renderSessionList();
-  setTab('matrices');
-  showView('home');
+  restoreNav();
 }
 function onSignedOut(){
   user = null; matrices = []; sessions = [];
@@ -175,6 +188,7 @@ function onSignedOut(){
    Tabs
    ========================================================================== */
 function setTab(which){
+  currentTab = which;
   const tm = $('tab-matrices'), tt = $('tab-thinking');
   const pm = $('pane-matrices'), pt = $('pane-thinking');
   if(which === 'matrices'){
@@ -184,6 +198,7 @@ function setTab(which){
     tt.classList.add('on'); tm.classList.remove('on');
     pt.style.display = ''; pm.style.display = 'none';
   }
+  if($('view-home').classList.contains('active')) saveNav({ screen: 'home', tab: which });
 }
 function setupTabs(){
   $('tab-matrices').addEventListener('click', () => setTab('matrices'));
@@ -296,6 +311,7 @@ function openMatrix(id){
   $('matrix-title-display').textContent = rec ? rec.name : '';
   applyMatrixView();
   showView('matrix');
+  saveNav({ screen: 'matrix', id });
 }
 function persistTasks(){ saveMatrix(currentMatrixId, { tasks: currentTasks }); }
 
@@ -457,6 +473,7 @@ function openSession(id){
   $('session-title-display').textContent = rec ? rec.name : '';
   applySessionView();
   showView('session');
+  saveNav({ screen: 'session', id });
 }
 function persistSession(){ saveSessionData(currentSessionId); }
 
@@ -472,45 +489,50 @@ function listFor(side){ return side === 'l' ? currentData.thoughts : currentData
 function renderSession(){
   const view = getSessionView();
   const body = $('session-body'); body.innerHTML = '';
+  body.className = (view === 'stack') ? 'mode-stack' : 'mode-cols';
 
   if(view === 'cols'){
-    const heads = el('div', 'pt-heads');
-    heads.innerHTML = '<div class="pt-head l">The thought</div><div class="pt-head r">The balance</div>';
-    body.appendChild(heads);
     const cols = el('div', 'pt-cols');
-    const cl = el('div', 'pt-col'), cr = el('div', 'pt-col');
-    buildList('l', cl); buildList('r', cr);
-    cols.appendChild(cl); cols.appendChild(cr);
+    cols.appendChild(buildPanel('l', false));   // no accent bar in side-by-side
+    cols.appendChild(buildPanel('r', false));
     body.appendChild(cols);
   } else {
-    const hl = el('div', 'pt-section-h l'); hl.textContent = 'The thought'; body.appendChild(hl);
-    const sl = el('div', 'pt-stack-list'); buildList('l', sl); body.appendChild(sl);
-    body.appendChild(el('div', 'pt-divide'));
-    const hr = el('div', 'pt-section-h r'); hr.textContent = 'The balance'; body.appendChild(hr);
-    const sr = el('div', 'pt-stack-list'); buildList('r', sr); body.appendChild(sr);
+    body.appendChild(buildPanel('l', true));     // accent bar in stacked
+    body.appendChild(buildPanel('r', true));
   }
   renderSummary();
 }
 
-function buildList(side, container){
+/* each side is a tinted panel (matrix-style) holding white chips */
+function buildPanel(side, accent){
+  const panel = el('div', 'pt-panel ' + side + (accent ? ' accent' : ''));
+  const h = el('div', 'pt-panel-h');
+  h.textContent = side === 'l' ? 'The thought' : 'The balance';
+  panel.appendChild(h);
   const list = listFor(side);
-  list.forEach(item => container.appendChild(makeItem(side, item)));
+  list.forEach(item => panel.appendChild(makeItem(side, item)));
   const label = side === 'l' ? '＋ add a thought' : '＋ add a balance';
   const ph = side === 'l' ? 'What went through your mind…' : 'Something good, big or small…';
-  container.appendChild(makeInlineAdd(label, ph, (v) => {
+  panel.appendChild(makeInlineAdd(label, ph, (v) => {
     list.push({ id: uid(side), text: v });
     persistSession();
     renderSession();
   }));
+  return panel;
 }
 
 function makeItem(side, item){
-  const div = el('div', 'pt-item ' + side);
-  div.dataset.id = item.id;
-  const text = el('div', 'pt-item-text');
+  const chip = el('div', 'pt-chip ' + side);
+  chip.dataset.id = item.id;
+
+  const badge = el('span', 'pt-badge');
+  badge.textContent = side === 'l' ? '−' : '+';
+  chip.appendChild(badge);
+
+  const text = el('div', 'pt-chip-text');
   if((item.text || '').trim()){ text.textContent = item.text; }
-  else { text.textContent = side === 'l' ? 'What went through your mind…' : 'Something good, big or small…'; div.classList.add('placeholder'); }
-  div.appendChild(text);
+  else { text.textContent = side === 'l' ? 'What went through your mind…' : 'Something good, big or small…'; chip.classList.add('placeholder'); }
+  chip.appendChild(text);
 
   const del = el('button', 'pt-del'); del.textContent = '✕'; del.setAttribute('aria-label', 'remove');
   del.addEventListener('click', (e) => {
@@ -520,23 +542,23 @@ function makeItem(side, item){
     if(i > -1) list.splice(i, 1);
     persistSession(); renderSession();
   });
-  div.appendChild(del);
+  chip.appendChild(del);
 
-  div.addEventListener('click', (e) => {
+  chip.addEventListener('click', (e) => {
     if(e.target === del) return;
-    if(div.querySelector('textarea')) return;
-    editItem(div, side, item);
+    if(chip.querySelector('textarea')) return;
+    editItem(chip, side, item);
   });
-  return div;
+  return chip;
 }
 
-function editItem(div, side, item){
-  div.classList.remove('placeholder');
-  div.querySelectorAll('.pt-item-text').forEach(n => n.remove());
+function editItem(chip, side, item){
+  chip.classList.remove('placeholder');
+  chip.querySelectorAll('.pt-chip-text').forEach(n => n.remove());
   const ta = el('textarea');
   ta.value = item.text || '';
   ta.rows = 2;
-  div.insertBefore(ta, div.firstChild);
+  chip.querySelector('.pt-badge').after(ta);
   ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
 
   function commit(){
