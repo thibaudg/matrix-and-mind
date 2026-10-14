@@ -2,142 +2,137 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#EEF0F3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Tones">
-<title>Tone Anchoring</title>
+<title>Matrix &amp; Mind</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div id="demo-banner" class="demo-banner" style="display:none">Demo mode: sample data, nothing is saved. Add your Supabase keys to config.js to use your repository.</div>
-
 <div class="wrap">
 
-  <!-- ===== SIGN IN ===== -->
-  <div class="view" id="view-login">
+  <!-- ===== LOGIN ===== -->
+  <div class="view active" id="view-login">
     <div class="login">
-      <img class="logo" src="icon.svg" alt="">
-      <h1>Tone Anchoring</h1>
-      <p>Your tone mnemonics, one search away.</p>
+      <div class="logo">◫</div>
+      <h1 class="login-title">Matrix &amp; Mind</h1>
+      <p class="login-sub">Your priorities and your thoughts, in one place.</p>
       <form id="login-form" autocomplete="on">
         <input id="login-email" class="field-input" type="email" placeholder="Email" autocomplete="email" required>
-        <input id="login-password" class="field-input" type="password" placeholder="Password" autocomplete="current-password" required>
+        <input id="login-password" class="field-input" type="password" placeholder="Password" autocomplete="current-password" required minlength="6">
         <div class="login-error" id="login-error"></div>
         <button class="primary" id="login-submit" type="submit">Sign in</button>
       </form>
+      <div class="switch" id="login-switch">
+        New here? <b id="login-toggle">Create an account</b>
+      </div>
     </div>
   </div>
 
-  <!-- ===== REPOSITORY ===== -->
-  <div class="view" id="view-main">
-    <div class="top">
-      <div class="bar">
-        <div class="search" id="search-box">
-          <svg class="glass" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          <input id="search" type="search" placeholder="Search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
-          <button class="clear" id="search-clear" aria-label="Clear search">✕</button>
+  <!-- ===== HOME (both tabs) ===== -->
+  <div class="view" id="view-home">
+    <div class="seg">
+      <button class="seg-btn on" id="tab-matrices">Matrices</button>
+      <button class="seg-btn" id="tab-thinking">Positive thinking</button>
+    </div>
+
+    <div id="pane-matrices">
+      <div class="eyebrow">Eisenhower method</div>
+      <h1 class="title">Priority Matrices</h1>
+      <div id="matrices-content"><div class="loading">loading…</div></div>
+    </div>
+
+    <div id="pane-thinking" style="display:none;">
+      <div class="eyebrow">Thought record</div>
+      <h1 class="title">Positive Thinking</h1>
+      <div id="thinking-content"><div class="loading">loading…</div></div>
+    </div>
+
+    <button class="signout" id="signout-btn">Sign out</button>
+  </div>
+
+  <!-- ===== CREATE MATRIX ===== -->
+  <div class="view" id="view-create">
+    <button class="back-btn" id="create-back">‹ Matrices</button>
+    <div class="field-label">Name this matrix</div>
+    <input id="new-name-input" class="name-field" type="text" placeholder="e.g. This Week" maxlength="60">
+    <div class="preset-row" id="preset-row"></div>
+    <button class="primary block" id="create-submit" disabled>Create</button>
+  </div>
+
+  <!-- ===== MATRIX DETAIL ===== -->
+  <div class="view" id="view-matrix">
+    <div class="detail-top">
+      <button class="back-btn" id="matrix-back">‹ Matrices</button>
+      <div class="view-toggle" id="matrix-view-toggle">
+        <button type="button" data-view="grid" class="on" aria-label="Grid view">▦</button>
+        <button type="button" data-view="list" aria-label="List view">≡</button>
+      </div>
+    </div>
+    <div class="detail-head">
+      <h1 class="title editable" id="matrix-title-display"></h1>
+      <input id="matrix-title-input" class="title-input" type="text" maxlength="60" style="display:none;">
+    </div>
+
+    <div id="matrix-grid-view">
+      <div class="axis-top">
+        <div class="axcap">Urgent</div>
+        <div class="axcap">Not urgent</div>
+      </div>
+      <div class="grid">
+        <div class="quad q-do" id="q-do">
+          <div class="quad-head"><p class="quad-title">Do with intention</p><p class="quad-sub">Handle it now</p></div>
+          <ul class="tasks" id="tasks-do"></ul>
         </div>
-        <button class="sq add" id="add-btn" aria-label="Add to inbox">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        </button>
-        <button class="sq more" id="menu-btn" aria-label="Menu">⋯<span class="mbadge" id="menu-badge" style="display:none"></span></button>
-      </div>
-      <div class="filter-row">
-        <div class="seg" id="filter">
-          <button data-f="all" class="on">All</button>
-          <button data-f="inbox">Inbox</button>
-          <button data-f="char">Characters</button>
-          <button data-f="word">Words</button>
+        <div class="quad q-schedule" id="q-schedule">
+          <div class="quad-head"><p class="quad-title">Schedule</p><p class="quad-sub">Plan time for it</p></div>
+          <ul class="tasks" id="tasks-schedule"></ul>
         </div>
-        <button class="sort" id="sort-btn" aria-label="Sort and group">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4"/></svg>
-        </button>
+        <div class="quad q-delegate" id="q-delegate">
+          <div class="quad-head"><p class="quad-title">Do – low effort</p><p class="quad-sub">Quick wins</p></div>
+          <ul class="tasks" id="tasks-delegate"></ul>
+        </div>
+        <div class="quad q-drop" id="q-drop">
+          <div class="quad-head"><p class="quad-title">Drop</p><p class="quad-sub">Skip it</p></div>
+          <ul class="tasks" id="tasks-drop"></ul>
+        </div>
       </div>
     </div>
-    <div id="list"><div class="loading">Loading…</div></div>
+
+    <div id="matrix-list-view" style="display:none;"></div>
+
+    <footer>tap ＋ to add · tap a task to check it off · ▦ / ≡ switches view</footer>
   </div>
 
-  <!-- ===== ENTRY PAGE ===== -->
-  <div class="view" id="view-entry">
-    <div class="etop">
-      <button class="back" id="entry-back">‹ Repository</button>
-      <button class="lnk" id="entry-edit">Edit</button>
-    </div>
-    <div id="entry-body"></div>
-  </div>
-
-  <!-- ===== REVIEW ===== -->
-  <div class="view" id="view-review">
-    <div class="rv-top">
-      <button class="rv-x" id="rv-close" aria-label="Close review">✕</button>
-      <div class="rv-pb" id="rv-top"><i id="rv-bar"></i></div>
-      <span class="rv-count" id="rv-count"></span>
-    </div>
-    <div id="rv-body"></div>
-  </div>
-
-  <!-- ===== CHANGES ===== -->
-  <div class="view" id="view-changes">
-    <div class="top">
-      <div class="top-row" style="margin-bottom:0">
-        <button class="back" id="changes-back">‹ Repository</button>
+  <!-- ===== POSITIVE THINKING SESSION ===== -->
+  <div class="view" id="view-session">
+    <div class="detail-top">
+      <button class="back-btn" id="session-back">‹ Sessions</button>
+      <div class="view-toggle" id="session-view-toggle">
+        <button type="button" data-view="cols" class="on" aria-label="Columns view">▥</button>
+        <button type="button" data-view="stack" aria-label="Stacked view">≡</button>
       </div>
-      <h1 id="changes-title" style="font-size:24px;font-weight:700;margin:6px 0 0;letter-spacing:-.02em">Changes</h1>
     </div>
-    <div id="changes-list"><div class="loading">Loading…</div></div>
+    <div class="detail-head">
+      <h1 class="title" id="session-title-display"></h1>
+    </div>
+
+    <div id="session-body"></div>
+
+    <div class="keep">
+      <h2>What I'm taking with me</h2>
+      <p class="hint">Write your own summary — tap to type.</p>
+      <div class="summary-field" id="summary-field"></div>
+    </div>
+
+    <footer>two separate lists · tap any box to write · ▥ / ≡ switches view</footer>
   </div>
 
 </div>
-
-<!-- ===== SHEETS ===== -->
-<div class="scrim" id="scrim"></div>
-
-<div class="sheet" id="sheet-add" role="dialog" aria-labelledby="add-title">
-  <div class="grab"></div>
-  <h2 id="add-title">Add to inbox</h2>
-  <div id="add-ref" style="display:none;margin-bottom:8px"></div>
-  <textarea id="add-text" placeholder="Paste from Claude or type…"></textarea>
-  <div class="hint" id="add-hint">Free text or paste from Claude. No format needed.</div>
-  <div class="swrow" id="add-nothc-row">
-    <div><div>Not from HelloChinese</div><div class="sub">Gets reviewed first</div></div>
-    <button class="switch" id="add-nothc" role="switch" aria-checked="false" aria-label="Not from HelloChinese"><i></i></button>
-  </div>
-  <div class="btn-row"><button class="btn ghost" data-close>Cancel</button><button class="btn go" id="add-save">Add</button></div>
-</div>
-
-<div class="sheet" id="sheet-sort" role="dialog" aria-labelledby="sort-title">
-  <div class="grab"></div>
-  <h2 id="sort-title">Sort and group</h2>
-  <div class="lbl">Group by</div>
-  <div class="pills" id="group-pills"></div>
-  <div class="lbl">Sort within groups</div>
-  <div class="pills" id="sortby-pills"></div>
-  <div class="lbl">Filter by tone</div>
-  <div class="pills" id="tone-pills"></div>
-  <div class="hint">Remembered on this device.</div>
-  <button class="primary" data-close>Done</button>
-</div>
-
-<div class="sheet" id="sheet-menu" role="dialog" aria-label="Menu">
-  <div class="grab"></div>
-  <div class="stats" id="stats">…</div>
-  <button class="mi accent strong" id="m-review"><span class="ic">▤</span>Review<span class="side" id="review-side"></span></button>
-  <button class="mi" id="m-changes"><span class="ic">↺</span>Changes<span class="side" id="changes-today"></span></button>
-  <button class="mi" id="m-export"><span class="ic">↓</span>Export JSON</button>
-  <button class="mi" disabled><span class="ic">≡</span>Mnemonic rules (later)</button>
-  <button class="mi accent" id="m-signout"><span class="ic">→</span>Sign out</button>
-</div>
-
-<div class="toast" id="toast"></div>
 
 <script src="vendor/supabase.js"></script>
-<script src="vendor/fsrs.js"></script>
-<script src="pinyin.js"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
 </body>
